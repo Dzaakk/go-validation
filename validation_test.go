@@ -29,8 +29,8 @@ func TestValidationVariable(t *testing.T) {
 func TestValidationTwoVariables(t *testing.T) {
 	validate := validator.New()
 
-	password := "pass"
-	confirmPassword := "pass"
+	password := "password"
+	confirmPassword := "password"
 
 	err := validate.VarWithValue(password, confirmPassword, "eqfield")
 
