@@ -455,3 +455,37 @@ func TestCrossFieldValidation(t *testing.T) {
 		fmt.Println(err)
 	}
 }
+
+type RegisterRequest struct {
+	Username string `validate:"required"`
+	Email    string `validate:"required,email"`
+	Phone    string `validate:"required,numeric"`
+	Password string `validate:"required"`
+}
+
+func MustValidRegisterSuccess(level validator.StructLevel) {
+	registerRequest := level.Current().Interface().(RegisterRequest)
+
+	if registerRequest.Username == registerRequest.Email || registerRequest.Username == registerRequest.Phone {
+		//success
+	} else {
+		//failed
+		level.ReportError(registerRequest.Username, "Username", "Username", "username", "")
+	}
+}
+
+func TestStructValidation(t *testing.T) {
+	validate := validator.New()
+	validate.RegisterStructValidation(MustValidRegisterSuccess, RegisterRequest{})
+
+	request := RegisterRequest{
+		Username: "08123",
+		Email:    "user@email.com",
+		Phone:    "08123",
+		Password: "pass",
+	}
+	err := validate.Struct(request)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
