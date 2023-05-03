@@ -252,3 +252,59 @@ func TestMap(t *testing.T) {
 		fmt.Println(err.Error())
 	}
 }
+
+func TestBasicMap(t *testing.T) {
+	type Address struct {
+		City    string `validate:"required"`
+		Country string `validate:"required"`
+	}
+	type School struct {
+		Name string `validate:"required"`
+	}
+	type User struct {
+		Id        string            `validate:"required"`
+		Name      string            `validate:"required"`
+		Addresses []Address         `validate:"required,dive"`
+		Hobbies   []string          `validate:"required,dive,required,min=3"`
+		Schools   map[string]School `validate:"dive,keys,required,min=2,endkeys,dive"`
+		Wallet    map[string]int    `validate:"dive,keys,required,endkeys,required,gt=1000"`
+	}
+	validate := validator.New()
+	request := User{
+		Id:   "",
+		Name: "",
+		Addresses: []Address{
+			{
+				City:    "",
+				Country: "",
+			},
+		},
+		Hobbies: []string{
+			"Coding",
+			"Gaming",
+			"",
+			"X",
+		},
+		Schools: map[string]School{
+			"Elementary School": {
+				Name: "EL School",
+			},
+			"SMP": {
+				Name: "",
+			},
+			"": {
+				Name: "",
+			},
+		},
+		Wallet: map[string]int{
+			"MANDIRI": 100000,
+			"BCA":     0,
+			"":        2000,
+		},
+	}
+
+	err := validate.Struct(request)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+}
